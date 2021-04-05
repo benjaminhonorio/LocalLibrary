@@ -13,19 +13,15 @@ from catalog.forms import RenewBookModelForm, StatusBookModelForm
 
 def index(request):
     """View function for home page of site."""
-
     # Generate counts of some of the main objects
     num_books = Book.objects.all().count()
     num_instances = BookInstance.objects.all().count()
-
     # Available books (status = 'a')
     num_instances_available = BookInstance.objects.filter(status__exact='a').count()
     # Book instances (title__icontains = 'poder')
     num_books_contains_poder = BookInstance.objects.filter(book__title__icontains='poder').count()
-
     # The 'all()' is implied by default.
     num_authors = Author.objects.count()
-
     # Number of visits to this view, as counted in the session variable.
     num_visits = request.session.get('num_visits', 1)
     request.session['num_visits'] = num_visits + 1
@@ -46,13 +42,10 @@ def index(request):
 @permission_required('catalog.can_mark_returned', raise_exception=True)
 def renew_book_librarian(request, pk):
     book_instance = get_object_or_404(BookInstance, pk=pk)
-
     # If this is a POST request then process the Form data
     if request.method == 'POST':
-
         # Create a form instance and populate it with data from the request (binding):
         form = RenewBookModelForm(request.POST)
-
         # Check if the form is valid:
         if form.is_valid():
             # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
@@ -60,30 +53,27 @@ def renew_book_librarian(request, pk):
             book_instance.status = form.cleaned_data['status']
             book_instance.borrower = form.cleaned_data['borrower']
             book_instance.save()
-
             # redirect to a new URL:
             return HttpResponseRedirect(reverse('all-borrowed') )
-
     # If this is a GET (or any other method) create the default form.
     else:
-        # proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
+        proposed_renewal_date = datetime.date.today() + datetime.timedelta(weeks=3)
         # form = RenewBookForm(initial={'renewal_date': proposed_renewal_date})
         form = RenewBookModelForm(
             initial={
-                'due_back': book_instance.due_back,
+                'due_back': proposed_renewal_date,
                 'status': book_instance.status,
-                'borrower':book_instance.borrower})
-    
+                'borrower':book_instance.borrower})  
     context = {
         'form': form,
         'book_instance': book_instance,
     }
-
     return render(request, 'catalog/book_renew_librarian.html', context)
 
 @login_required
 @permission_required('catalog.can_loan_book', raise_exception=True)
 def status_book_librarian(request, pk):
+    """Change the status (mainly) of a book instance"""
     book_instance = get_object_or_404(BookInstance, pk=pk)
     original_status = book_instance.get_status_display().lower()
     # If this is a POST request then process the Form data
@@ -92,21 +82,27 @@ def status_book_librarian(request, pk):
         form = StatusBookModelForm(request.POST)
         # Check if the form is valid:
         if form.is_valid():
-            # process the data in form.cleaned_data as required (here we just write it to the model due_back field)
+            # process the data in form.cleaned_data as required
+            book_instance.due_back = form.cleaned_data['due_back']
             book_instance.status = form.cleaned_data['status']
+            book_instance.borrower = form.cleaned_data['borrower']
             book_instance.save()
+            if original_status == 'on loan':
             # redirect to a new URL:
-            return HttpResponseRedirect(reverse(f'all-{original_status}') )
+                return HttpResponseRedirect(reverse('all-borrowed'))
+            return HttpResponseRedirect(reverse(f'all-{original_status}'))
 
     # If this is a GET (or any other method) create the default form.
     else:
-        form = StatusBookModelForm(initial={'status': book_instance.status})
-    
+        form = StatusBookModelForm(
+            initial={
+                'due_back': None,
+                'status': 'a',
+                'borrower':None}) 
     context = {
         'form': form,
         'book_instance': book_instance,
     }
-
     return render(request, 'catalog/book_change_status.html', context)
 
 
