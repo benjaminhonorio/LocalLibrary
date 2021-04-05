@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>Book: {{ book_instance.book.title }}</h1>
-<p>Borrower: {% if book_instance.borrower %}{{ book_instance.borrower }}{% else %}N/A{% endif %}</p>
+<p>Current Borrower: {% if book_instance.borrower %}{{ book_instance.borrower }}{% else %}N/A{% endif %}</p>
 <form action="" method="post">
     {% csrf_token %}
     <table>
