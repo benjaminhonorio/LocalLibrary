@@ -3,7 +3,8 @@
 {% block content %}
 <h1>Title: {{ book.title }}</h1>
 
-<p><strong>Author:</strong> <a href="{% url 'author-detail' book.author.id %}">{{ book.author }}</a></p>
+<p><strong>Author:</strong> {% if book.author %}<a
+        href="{% url 'author-detail' book.author.id %}">{{ book.author }}</a>{% else %}N/A</p>{% endif %}
 <!-- author detail link not yet defined -->
 <p><strong>Summary:</strong> {{ book.summary }}</p>
 <p><strong>ISBN:</strong> {{ book.isbn }}</p>
@@ -20,7 +21,7 @@
         {{ copy.get_status_display }}
     </p>
     {% if copy.status != 'a' %}
-    <p><strong>Due to be returned:</strong> {{ copy.due_back }}</p>
+    <p><strong>Due to be returned:</strong> {% if copy.due_back %}{{ copy.due_back }}{% else %}-{% endif %} </p>
     {% endif %}
     <p><strong>Imprint:</strong> {{ copy.imprint }}</p>
     <p class="text-muted"><strong>Id:</strong> {{ copy.id }}</p>

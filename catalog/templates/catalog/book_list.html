@@ -9,7 +9,8 @@
 <ul>
     {% for book in book_list %}
     <li>
-        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a> ({{book.author}})
+        <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
+        {% if book.author %}({{book.author}}){% else %}(N/A){% endif %}
         {% if perms.catalog.change_book %}
         <small>[<a href="{% url 'book-update' book.id %}">Edit</a>]</small>
         {% endif %}

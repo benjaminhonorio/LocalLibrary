@@ -4,9 +4,9 @@ from . import views
 urlpatterns = [
     path('', views.index, name='index'),
     path('books/', views.BookListView.as_view(), name='books'),
-    path('book/<int:pk>', views.BookDetailView.as_view(), name='book-detail'),
+    path('book/<int:pk>/', views.BookDetailView.as_view(), name='book-detail'),
     path('authors/', views.AuthorListView.as_view(), name='authors'),
-    path('author/<int:pk>', views.AuthorDetailView.as_view(), name='author-detail'),
+    path('author/<int:pk>/', views.AuthorDetailView.as_view(), name='author-detail'),
 
     # For example, given the path shown below, for a request to /myurl/halibut/ 
     # Django will call views.my_view(request, fish=halibut, my_template_name='some_path').
@@ -18,7 +18,7 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path('books/loaned', views.AllLoanedBooksByUserListView.as_view(), name='all-borrowed'),
+    path('books/loaned/', views.AllLoanedBooksByUserListView.as_view(), name='all-borrowed'),
 ]
 
 urlpatterns += [
@@ -38,9 +38,9 @@ urlpatterns += [
 ]
 
 urlpatterns += [
-    path('books/available', views.AllAvailableBooksListView.as_view(), name='all-available'),
-    path('books/reserved', views.AllReservedBooksListView.as_view(), name='all-reserved'),
-    path('books/maintenance', views.AllMaintainedBooksListView.as_view(), name='all-maintenance'),
+    path('books/available/', views.AllAvailableBooksListView.as_view(), name='all-available'),
+    path('books/reserved/', views.AllReservedBooksListView.as_view(), name='all-reserved'),
+    path('books/maintenance/', views.AllMaintainedBooksListView.as_view(), name='all-maintenance'),
 ]
 
 urlpatterns += [
