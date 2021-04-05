@@ -38,6 +38,16 @@ class StatusBookModelForm(ModelForm):
             'status': _('Select the status for this book'),  
             'borrower':_('Add borrower if needed.'),
             } 
+    def clean_due_back(self):
+        data = self.cleaned_data['due_back']
+        # Check if a date is not in the past and is not None.
+        if data is not None and data < datetime.date.today():
+            raise ValidationError(_('Invalid date - renewal in past'))
+        # Check if a date is in the allowed range (+4 weeks from today) and is not None.
+        if data is not None and data > datetime.date.today() + datetime.timedelta(weeks=4):
+            raise ValidationError(_('Invalid date - renewal more than 4 weeks ahead'))
+        # Remember to always return the cleaned data.
+        return data
 
 # Alternative form for RenewBookModelForm
 # class RenewBookForm(forms.Form):
